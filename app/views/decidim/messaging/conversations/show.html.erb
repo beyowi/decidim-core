@@ -1,0 +1,13 @@
+<%= render layout: "show", locals: { participants: conversation.interlocutors(current_user) } do %>
+  <div id="messages" class="scroll-to-last-message">
+    <% user_grouped_messages.each do |sender, messages| %>
+        <%= render "messages", sender: sender, messages: messages %>
+    <% end %>
+  </div>
+
+  <% if conversation.accept_user?(current_user) %>
+    <%= render "reply", form: @form, conversation: conversation %>
+  <% else %>
+    <em><%= t ".not_allowed" %></em>
+  <% end %>
+<% end %>

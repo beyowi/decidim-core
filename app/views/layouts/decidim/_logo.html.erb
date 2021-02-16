@@ -1,0 +1,11 @@
+<% if organization %>
+  <%= link_to organization.official_url, title: t("logo", scope: "decidim.accessibility", organization: organization.name) do %>
+    <% if organization.logo.present? %>
+      <%= image_tag organization.logo.medium.url, alt: t("logo", scope: "decidim.accessibility", organization: organization.name) %>
+    <% else %>
+      <span><%= organization.name %></span>
+    <% end %>
+  <% end %>
+<% else %>
+  <%= Decidim.application_name %>
+<% end %>
