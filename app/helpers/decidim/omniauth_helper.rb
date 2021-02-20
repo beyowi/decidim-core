@@ -6,7 +6,7 @@ module Decidim
     # Public: normalize providers names to they can be used for buttons
     # and icons.
     def normalize_provider_name(provider)
-      provider.to_s.split("_").first
+      t("decidim.system.organizations.omniauth_settings.#{provider}.display_name", :default => provider.to_s.split("_").first)
     end
 
     # Public: icon for omniauth buttons

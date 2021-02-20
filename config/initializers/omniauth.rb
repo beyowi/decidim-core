@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-def setup_provider_proc(provider, config_mapping = {})
+def setup_provider_proc(provider, config_mapping = {}, client_option_mapping = {})
   lambda do |env|
     request = Rack::Request.new(env)
     organization = Decidim::Organization.find_by(host: request.host)
@@ -8,6 +8,10 @@ def setup_provider_proc(provider, config_mapping = {})
 
     config_mapping.each do |option_key, config_key|
       env["omniauth.strategy"].options[option_key] = provider_config[config_key]
+    end
+
+    client_option_mapping.each do |option_key, config_key|
+      env["omniauth.strategy"].options[:client_options][option_key] = provider_config[config_key]
     end
   end
 end
@@ -26,14 +30,14 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     if omniauth_config[:decidim].present?
       provider(
         :decidim,
-        setup: setup_provider_proc(:decidim, client_id: :client_id, client_secret: :client_secret, site: :site_url)
+        setup: setup_provider_proc(:decidim, { client_id: :client_id, client_secret: :client_secret, site: :site_url })
       )
     end
 
     if omniauth_config[:facebook].present?
       provider(
         :facebook,
-        setup: setup_provider_proc(:facebook, client_id: :app_id, client_secret: :app_secret),
+        setup: setup_provider_proc(:facebook, { client_id: :app_id, client_secret: :app_secret }),
         scope: :email,
         info_fields: "name,email,verified"
       )
@@ -42,14 +46,21 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     if omniauth_config[:twitter].present?
       provider(
         :twitter,
-        setup: setup_provider_proc(:twitter, consumer_key: :api_key, consumer_secret: :api_secret)
+        setup: setup_provider_proc(:twitter, { consumer_key: :api_key, consumer_secret: :api_secret })
       )
     end
 
     if omniauth_config[:google_oauth2].present?
       provider(
         :google_oauth2,
-        setup: setup_provider_proc(:google_oauth2, client_id: :client_id, client_secret: :client_secret)
+        setup: setup_provider_proc(:google_oauth2, { client_id: :client_id, client_secret: :client_secret })
+      )
+    end
+
+    if omniauth_config[:keycloakopenid].present?
+      provider(
+        :keycloakopenid,
+        setup: setup_provider_proc(:keycloakopenid, { client_id: :client_id, client_secret: :client_secret }, { site: :site_url, realm: :realm})
       )
     end
   end
