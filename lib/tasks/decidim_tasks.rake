@@ -30,6 +30,7 @@ namespace :decidim do
       decidim_verifications
       decidim_opinions
       decidim_questions
+      decidim_fictions
     ).join(",")
   end
 end
